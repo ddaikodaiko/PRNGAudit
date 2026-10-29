@@ -38,7 +38,7 @@ packages = ["src/prng_audit"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["tests"]
-addopts = ["--strict-markers", "-ra"]
+addopts = ["--strict-markers", "-ra", "-m", "not slow"]
 markers = [
     "slow: pruebas lentas (se excluyen con -m 'not slow')",
 ]
@@ -46,7 +46,7 @@ markers = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-src = ["src", "tests"]
+src = ["src", "tests", "experiments"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF", "PT", "NPY"]
@@ -56,7 +56,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["prng_audit"]
-known-local-folder = ["_vectors"]
+known-local-folder = ["_vectors", "_common"]
 
 [tool.ruff.lint.per-file-ignores]
 # En los generadores se usan nombres de una letra (x, y, s0, s1) para
@@ -65,8 +65,8 @@ known-local-folder = ["_vectors"]
 
 [tool.mypy]
 python_version = "3.12"
-mypy_path = ["src", "tests"]
-files = ["src", "tests"]
+mypy_path = ["src", "tests", "experiments"]
+files = ["src", "tests", "experiments"]
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]

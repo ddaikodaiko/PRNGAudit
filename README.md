@@ -35,7 +35,7 @@ aun así ser completamente predecible. Pasar los tests no implica seguridad.
 | Hito | Contenido | Estado |
 |---|---|---|
 | H1 | Esqueleto, CI, generadores validados contra CPython, NumPy, JDK y V8 | ✅ |
-| H2 | Ataques: MT con salidas completas y LCG de Java | ⏳ |
+| H2 | Ataques: MT con salidas completas y LCG de Java | ✅ |
 | H3 | Batería NIST SP 800-22 | ⏳ |
 | H4 | Casino simulado | ⏳ |
 | H5 | Ataques: floats, salidas truncadas (GF(2)), semilla por tiempo, xorshift128+ | ⏳ |
@@ -58,6 +58,16 @@ aun así ser completamente predecible. Pasar los tests no implica seguridad.
 La explicación de cada uno, en lenguaje llano, está en
 [`docs/explicaciones/01-generadores.md`](docs/explicaciones/01-generadores.md).
 
+## Resultados hasta ahora
+
+| Ataque | Observaciones | Acierto en las 10 000 salidas siguientes | Control (ChaCha20, `os.urandom`) |
+|---|---:|---:|---:|
+| Nivel 1: clonar MT19937 (`random` de Python) | 624 salidas de 32 bits | 100 % (100/100 ensayos) | 0 % |
+| Nivel 5: recuperar `java.util.Random` | 2 `nextInt()` | 100 % (100/100 ensayos) | 0 estados compatibles |
+
+Explicación: [`docs/explicaciones/02-ataques-mt-y-lcg.md`](docs/explicaciones/02-ataques-mt-y-lcg.md).
+Reproducir: `make experiments` (resultados en `experiments/out/`).
+
 ## Uso rápido
 
 Requisitos: [uv](https://docs.astral.sh/uv/) (instala Python 3.12 si hace falta).
@@ -74,6 +84,18 @@ import random
 g = MT19937(42)
 r = random.Random(42)
 assert g.getrandbits(32) == r.getrandbits(32)
+```
+
+Ejemplo de clonado del Mersenne Twister de Python a partir de 624 salidas:
+
+```python
+import random
+from prng_audit.core.attacks.mt19937_clone import clone
+
+victima = random.Random()                      # semilla desconocida
+observadas = [victima.getrandbits(32) for _ in range(624)]
+clon = clone(observadas)
+assert clon.getrandbits(32) == victima.getrandbits(32)
 ```
 
 Para regenerar los vectores de referencia hace falta además un JDK, Node 22 y
