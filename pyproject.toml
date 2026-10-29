@@ -1,0 +1,74 @@
+[project]
+name = "prng-audit"
+version = "0.1.0.dev0"
+description = "Auditoría criptográfica de generadores pseudoaleatorios y teoría de juegos sobre un casino simulado"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "DDAIKODAIKO" }]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+]
+dependencies = [
+    "numpy>=2.1",
+    "scipy>=1.14",
+    "cryptography>=43",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "hypothesis>=6.112",
+    "ruff>=0.7",
+    "mypy>=1.13",
+]
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/prng_audit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]
+addopts = ["--strict-markers", "-ra"]
+markers = [
+    "slow: pruebas lentas (se excluyen con -m 'not slow')",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF", "PT", "NPY"]
+# RUF001-003: los comentarios y docstrings están en español y usan caracteres
+# tipográficos legítimos (´, ×, ⊕) que esta regla confunde con homoglifos.
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["prng_audit"]
+known-local-folder = ["_vectors"]
+
+[tool.ruff.lint.per-file-ignores]
+# En los generadores se usan nombres de una letra (x, y, s0, s1) para
+# seguir la notación de los artículos originales.
+"src/prng_audit/core/generators/*" = ["N806"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = ["src", "tests"]
+files = ["src", "tests"]
+warn_unused_configs = true
+
+[[tool.mypy.overrides]]
+module = "prng_audit.core.*"
+strict = true
