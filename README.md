@@ -92,7 +92,7 @@ Ejemplo de clonado del Mersenne Twister de Python a partir de 624 salidas:
 import random
 from prng_audit.core.attacks.mt19937_clone import clone
 
-victima = random.Random()                      # semilla desconocida
+victima = random.Random()  # semilla desconocida
 observadas = [victima.getrandbits(32) for _ in range(624)]
 clon = clone(observadas)
 assert clon.getrandbits(32) == victima.getrandbits(32)
